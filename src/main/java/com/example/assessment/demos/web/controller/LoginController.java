@@ -23,11 +23,12 @@ public class LoginController {
 
     @PostMapping("/login")
     public Result login(@RequestBody SysUser sysUser){
-        log.info("login信息: {}", sysUser);
+        log.info("登陆前login信息: {}", sysUser);
 
         LoginInfoVO loginInfoVO = loginService.login(sysUser);
 
         if (loginInfoVO != null){
+            log.info("登录成功: {}", loginInfoVO);
             return Result.success(loginInfoVO, "登录成功");
         }
 

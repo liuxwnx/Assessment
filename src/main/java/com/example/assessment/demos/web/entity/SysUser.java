@@ -15,7 +15,7 @@ public class SysUser { // 用户表
     private String password; // 密码
     private String gender; // 性别
     private String phone; // 电话
-    private Long roleId; // 角色
+    private Long roleId; // 角色id
     private String remarks; // 备注
     private LocalDateTime createTime; // 创建时间
     private LocalDateTime updateTime; // 更新时间

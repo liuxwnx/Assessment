@@ -36,6 +36,9 @@ public class SysOrder { // 订单表
     // 驳回理由
     private String rejectReason;
 
+    // 数量
+    private Integer quantity;
+
     // 创建时间
     private LocalDateTime createTime;
     // 更新时间
