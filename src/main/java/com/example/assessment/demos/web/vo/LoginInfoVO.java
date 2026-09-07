@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class LoginInfoVO {
     private String username; // 用户名
     private String password; // 密码
+    private Long roleId; // 角色ID
     private String token; // 令牌
 }

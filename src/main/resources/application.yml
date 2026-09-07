@@ -1,0 +1,22 @@
+# MyBatis 相关配置
+mybatis:
+  # 指定 Mybatis 的 Mapper 文件位置
+  mapper-locations: classpath:demos/web/mapper/*.xml
+  # 指定 Mybatis 的实体目录
+  type-aliases-package: com.example.assessment.mybatis.entity
+
+# 应用服务 WEB 访问端口
+server:
+  port: 8081
+
+# Spring 数据源相关配置
+spring:
+  datasource:
+    # 数据库连接 URL
+    url: jdbc:mysql://localhost:3306/assessment?useUnicode=true&characterEncoding=utf-8
+    # 数据库用户名
+    username: root
+    # 数据库密码
+    password: root
+    # 数据库驱动类名
+    driver-class-name: com.mysql.cj.jdbc.Driver

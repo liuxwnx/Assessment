@@ -52,6 +52,7 @@ public class LoginServiceImpl implements LoginService {
             return LoginInfoVO.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
+                    .roleId(user.getRoleId())
                     .token(token)
                     .build();
         }
