@@ -31,7 +31,7 @@ public class SysOrder { // 订单表
     private String status;
 
     // 合同文件
-    private Blob file;
+    private String file;
 
     // 驳回理由
     private String rejectReason;

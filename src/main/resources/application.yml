@@ -25,3 +25,8 @@ spring:
     password: root
     # 数据库驱动类名
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+# 文件上传存储路径
+file:
+  upload-path: F:/workspace/Assessment/uploads/

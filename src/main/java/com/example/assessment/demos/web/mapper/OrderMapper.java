@@ -1,5 +1,6 @@
 package com.example.assessment.demos.web.mapper;
 
+import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.entity.Customer;
 import com.example.assessment.demos.web.entity.SysOrder;
@@ -24,4 +25,19 @@ public interface OrderMapper {
      * @return
      */
     Page<SysOrder> orderQueryAll(OrderSearchDTO orderSearchDTO);
+
+    /**
+     * 订单详情
+     * @param id
+     * @return
+     */
+    @Select("SELECT * FROM sys_order WHERE id = #{id}")
+    SysOrder getOrderDetail(Long id);
+
+    /**
+     * 添加订单
+     * @param addOrderDTO
+     * @return
+     */
+    void addOrder(AddOrderDTO addOrderDTO);
 }

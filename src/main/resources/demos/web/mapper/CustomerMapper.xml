@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.assessment.demos.web.mapper.CustomerMapper">
+    <select id="listByUserId" resultType="com.example.assessment.demos.web.entity.Customer">
+        select * from customer
+        <where>
+            <if test="userId != null">
+                salesman_id = #{userId}
+            </if>
+            <if test="customerName != null">
+                and customer_name like CONCAT('%', #{customerName}, '%')
+            </if>
+        </where>
+    </select>
+    <select id="listAll" resultType="com.example.assessment.demos.web.entity.Customer">
+        select * from customer
+        <where>
+            <if test="customerName != null">
+                customer_name like CONCAT('%', #{customerName}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>
