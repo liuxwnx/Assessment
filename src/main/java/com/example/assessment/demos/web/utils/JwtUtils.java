@@ -11,7 +11,7 @@ import java.util.Map;
 public class JwtUtils {
 
     // 密钥，与测试类中保持一致
-    public static final String SECRET_KEY = "bGl1eGlud2Vp";
+    public static final String SECRET_KEY = "token";
 
     // 过期时间：12小时（毫秒）
     private static final long EXPIRATION_TIME = 12 * 60 * 60 * 1000;
