@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequestMapping("/order")
@@ -57,10 +59,10 @@ public class OrderController {
      * @param addOrderDTO
      * @return
      */
-    @PostMapping(value = "", consumes = "multipart/form-data")
+    @PostMapping()
     public Result<String> addOrder(
-            @RequestPart AddOrderDTO addOrderDTO
-    ) {
+            @RequestBody AddOrderDTO addOrderDTO
+    ) throws IOException {
         log.info("添加订单: {}", addOrderDTO);
 
         // TODO 添加订单逻辑未完成

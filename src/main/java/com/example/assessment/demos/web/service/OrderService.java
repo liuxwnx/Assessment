@@ -5,6 +5,8 @@ import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.result.PageResult;
 
+import java.io.IOException;
+
 public interface OrderService {
     /**
      * 订单查询
@@ -25,5 +27,5 @@ public interface OrderService {
      * @param addOrderDTO
      * @return
      */
-    void addOrder(AddOrderDTO addOrderDTO);
+    void addOrder(AddOrderDTO addOrderDTO) throws IOException;
 }

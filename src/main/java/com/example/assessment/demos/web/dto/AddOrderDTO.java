@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -20,6 +21,7 @@ public class AddOrderDTO {
     private String status; // 订单状态
     private BigDecimal price; // 单价 (分)
     private BigDecimal amount; // 金额（分）
-    private MultipartFile file; // 合同文件
-    private String filePath; // 合同文件路径
+    private String file; // 合同文件
+    private LocalDateTime createTime; // 创建时间
+    private LocalDateTime updateTime; // 更新时间
 }

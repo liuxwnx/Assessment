@@ -1,6 +1,10 @@
 # MyBatis 相关配置
 mybatis:
   # 配置 Mybatis 日志
+  # 启动本地配置文件
+  profiles:
+    active:
+      - local
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 开启驼峰命名转换
@@ -27,6 +31,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
-# 文件上传存储路径
-file:
-  upload-path: F:/workspace/Assessment/uploads/
+web:
+  alioss:
+    access-key-id: ${web.alioss.access-key-id}
+    access-key-secret: ${web.alioss.access-key-secret}
+    bucket-name: ${web.alioss.bucket-name}
+    endpoint: ${web.alioss.endpoint}

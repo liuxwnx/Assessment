@@ -7,8 +7,10 @@ import com.example.assessment.demos.web.entity.Customer;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.mapper.OrderMapper;
 import com.example.assessment.demos.web.mapper.ProductMapper;
+import com.example.assessment.demos.web.properties.AliOssProperties;
 import com.example.assessment.demos.web.result.PageResult;
 import com.example.assessment.demos.web.service.OrderService;
+import com.example.assessment.demos.web.utils.AliOssUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -34,8 +37,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductMapper productMapper;
 
-    @Value("${file.upload-path}")
-    private String uploadPath;
+    @Autowired
+    private AliOssProperties properties;
 
     /**
      * 订单查询
@@ -87,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public void addOrder(AddOrderDTO addOrderDTO) {
+    public void addOrder(AddOrderDTO addOrderDTO) throws IOException {
         if (addOrderDTO == null){
             throw new RuntimeException("参数为空");
         }
@@ -103,50 +106,21 @@ public class OrderServiceImpl implements OrderService {
         // 设置商品单价
         addOrderDTO.setPrice(productPrice);
         // 设置订单编号
-        addOrderDTO.setOrderNumber(timestamp + uuid);
+        addOrderDTO.setOrderNumber(timestamp + "__" + uuid);
         // 设置订单状态
         addOrderDTO.setStatus("待审批");
         // 单价乘以数量
         BigDecimal yuan = productPrice.multiply(BigDecimal.valueOf(addOrderDTO.getQuantity()));
-        // 单位转换为分
-        BigDecimal amount = yuan.multiply(new BigDecimal(100));
         // 设置订单金额
-        addOrderDTO.setAmount(amount);
+        addOrderDTO.setAmount(yuan);
 
-        // 处理文件上传
-        String filePath = uploadFile(addOrderDTO.getFile());
-        // 将文件路径设置到DTO中（用于入库）
-        addOrderDTO.setFilePath(filePath);
+        // 设置创建时间
+        addOrderDTO.setCreateTime(LocalDateTime.now());
+        // 设置更新时间
+        addOrderDTO.setUpdateTime(LocalDateTime.now());
 
         orderMapper.addOrder(addOrderDTO);
 
     }
 
-    private String uploadFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            return null;
-        }
-
-        // 按日期创建子目录: uploads/2026/09/08/
-        String dateDir = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        File dir = new File(uploadPath + dateDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        // 生成唯一文件名: 时间戳_原文件名
-        String originalFilename = file.getOriginalFilename();
-        String fileName = System.currentTimeMillis() + "_" + originalFilename;
-
-        File dest = new File(dir, fileName);
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            log.error("文件上传失败: {}", e.getMessage());
-            throw new RuntimeException("文件上传失败");
-        }
-
-        // 返回相对路径（存入数据库）
-        return dateDir + "/" + fileName;
-    }
 }
