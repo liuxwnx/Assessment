@@ -1,10 +1,6 @@
 # MyBatis 相关配置
 mybatis:
   # 配置 Mybatis 日志
-  # 启动本地配置文件
-  profiles:
-    active:
-      - local
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 开启驼峰命名转换
@@ -20,6 +16,9 @@ server:
 
 # Spring 数据源相关配置
 spring:
+  profiles:
+    active:
+      - local
   datasource:
     # 数据库连接 URL
     url: jdbc:mysql://localhost:3306/assessment?useUnicode=true&characterEncoding=utf-8
@@ -33,7 +32,7 @@ spring:
 
 web:
   alioss:
-    access-key-id: ${web.alioss.access-key-id}
+    access-key-id: ${web.alioss.access-key-secret}
     access-key-secret: ${web.alioss.access-key-secret}
     bucket-name: ${web.alioss.bucket-name}
     endpoint: ${web.alioss.endpoint}
