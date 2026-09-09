@@ -22,6 +22,35 @@
         </set>
         WHERE id = #{id}
     </update>
+    <update id="updateOrder">
+        UPDATE sys_order
+        /*把所有的属性都更新*/
+        <set>
+            <if test="sysOrder.customerId != null">
+                customer_id = #{sysOrder.customerId},
+            </if>
+            <if test="sysOrder.productId != null">
+                product_id = #{sysOrder.productId},
+            </if>
+            <if test="sysOrder.quantity != null">
+                quantity = #{sysOrder.quantity},
+            </if>
+            <if test="sysOrder.status != null">
+                status = #{sysOrder.status},
+            </if>
+            <if test="sysOrder.amount != null">
+                amount = #{sysOrder.amount},
+            </if>
+            <if test="sysOrder.orderNumber != null">
+                order_number = #{sysOrder.orderNumber},
+            </if>
+            <if test="sysOrder.file != null">
+                file = #{sysOrder.file},
+            </if>
+            update_time = #{sysOrder.updateTime}
+        </set>
+        WHERE id = #{id}
+    </update>
 
     <select id="orderQuery" resultType="com.example.assessment.demos.web.entity.SysOrder">
         SELECT o.* FROM sys_order o join customer c on o.customer_id = c.id

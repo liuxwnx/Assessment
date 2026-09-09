@@ -89,4 +89,20 @@ public class OrderController {
 
         return Result.success("审核成功");
     }
+
+    /**
+     * 修改订单
+     * @param id
+     * @param addOrderDTO
+     * @return
+     */
+    @PutMapping("/{id}")
+    public Result<String> updateOrder(
+            @PathVariable Long id,
+            @RequestBody AddOrderDTO addOrderDTO
+    ) {
+        log.info("修改订单: {}", id);
+        orderService.updateOrder(id, addOrderDTO);
+        return Result.success("修改成功");
+    }
 }

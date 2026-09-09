@@ -15,6 +15,7 @@ import com.example.assessment.demos.web.utils.AliOssUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -159,6 +160,35 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.auditOrder(id, status, updateTime, rejectReason);
 
 
+    }
+
+    /**
+     * 重新提交订单
+     * @param id
+     * @param addOrderDTO
+     * @return
+     */
+    @Override
+    public void updateOrder(Long id, AddOrderDTO addOrderDTO) {
+        if (id == null || addOrderDTO == null){
+            throw new RuntimeException("参数为空");
+        }
+        // 获取当前时间
+        LocalDateTime updateTime = LocalDateTime.now();
+        // 根据id查询订单详情
+        SysOrder sysOrder = orderMapper.getOrderDetail(id);
+        // 数据拷贝
+        BeanUtils.copyProperties(addOrderDTO, sysOrder);
+        // 设置更新时间
+        sysOrder.setUpdateTime(updateTime);
+        // 设置顶端状态
+        sysOrder.setStatus("待审批");
+        if (sysOrder == null){
+            throw new RuntimeException("订单不存在");
+        }
+
+        // 执行更新订单
+        orderMapper.updateOrder(id, sysOrder);
     }
 
 }

@@ -36,4 +36,12 @@ public interface OrderService {
      * @return
      */
     void auditOrder(Long id, String status, String rejectReason);
+
+    /**
+     * 修改订单
+     * @param id
+     * @param addOrderDTO
+     * @return
+     */
+    void updateOrder(Long id, AddOrderDTO addOrderDTO);
 }

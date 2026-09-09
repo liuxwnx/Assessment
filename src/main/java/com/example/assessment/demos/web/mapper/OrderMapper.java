@@ -52,4 +52,11 @@ public interface OrderMapper {
      */
     void auditOrder(@Param("id") Long id, @Param("status") String status, @Param("updateTime") LocalDateTime updateTime, @Param("rejectReason") String rejectReason);
 
+    /**
+     * 修改订单
+     * @param id
+     * @param sysOrder
+     * @return
+     */
+    void updateOrder(@Param("id") Long id, @Param("sysOrder") SysOrder sysOrder);
 }
