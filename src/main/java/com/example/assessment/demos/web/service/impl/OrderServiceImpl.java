@@ -4,6 +4,7 @@ import com.example.assessment.demos.web.context.BaseContext;
 import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.entity.Customer;
+import com.example.assessment.demos.web.entity.Product;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.mapper.OrderMapper;
 import com.example.assessment.demos.web.mapper.ProductMapper;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -37,8 +39,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductMapper productMapper;
 
-    @Autowired
-    private AliOssProperties properties;
 
     /**
      * 订单查询
@@ -120,6 +120,44 @@ public class OrderServiceImpl implements OrderService {
         addOrderDTO.setUpdateTime(LocalDateTime.now());
 
         orderMapper.addOrder(addOrderDTO);
+
+    }
+
+    /**
+     * 订单审核
+     * @param id
+     * @param status
+     * @return
+     */
+    @Override
+    @Transactional
+    public void auditOrder(Long id, String status, String rejectReason) {
+        // 参数校验
+        if (id == null || status == null || "".equals(status)){
+            throw new RuntimeException("参数为空");
+        }
+
+        // 查询订单详细信息
+        SysOrder sysOrder = orderMapper.getOrderDetail(id);
+        // 取出商品id
+        Long productId = sysOrder.getProductId();
+        // 根据商品id查询商品库存
+        Integer stock = productMapper.getProductById(productId);
+
+        if (stock == null || stock <= 0 || stock < sysOrder.getQuantity()){
+            throw new RuntimeException("商品库存不足");
+        }
+
+
+        LocalDateTime updateTime = LocalDateTime.now();
+
+        // 扣减库存
+        productMapper.reduceStock(productId, sysOrder.getQuantity(), updateTime);
+
+
+        // 执行订单审核
+        orderMapper.auditOrder(id, status, updateTime, rejectReason);
+
 
     }
 

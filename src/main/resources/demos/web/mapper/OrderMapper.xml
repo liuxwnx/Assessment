@@ -7,6 +7,21 @@
         INSERT INTO sys_order (customer_id, product_id, quantity, status, amount, order_number, file, create_time, update_time)
         VALUES (#{customerId}, #{productId}, #{quantity}, #{status}, #{amount}, #{orderNumber},#{file}, #{createTime}, #{updateTime})
     </insert>
+    <update id="auditOrder">
+        UPDATE sys_order
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="rejectReason != null">
+                reject_reason = #{rejectReason},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
 
     <select id="orderQuery" resultType="com.example.assessment.demos.web.entity.SysOrder">
         SELECT o.* FROM sys_order o join customer c on o.customer_id = c.id

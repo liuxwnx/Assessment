@@ -28,4 +28,12 @@ public interface OrderService {
      * @return
      */
     void addOrder(AddOrderDTO addOrderDTO) throws IOException;
+
+    /**
+     * 订单审核
+     * @param id
+     * @param status
+     * @return
+     */
+    void auditOrder(Long id, String status, String rejectReason);
 }

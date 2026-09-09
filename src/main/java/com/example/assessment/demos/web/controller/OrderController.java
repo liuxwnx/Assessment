@@ -3,6 +3,7 @@ package com.example.assessment.demos.web.controller;
 
 import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
+import com.example.assessment.demos.web.dto.StatusDTO;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.result.PageResult;
 import com.example.assessment.demos.web.result.Result;
@@ -69,5 +70,23 @@ public class OrderController {
         orderService.addOrder(addOrderDTO);
 
         return Result.success("添加成功");
+    }
+
+    /**
+     * 订单审核
+     * @param id
+     * @param statusDTO
+     * @return
+     */
+    @PostMapping("/{id}/audit")
+    public Result<String> auditOrder(
+            @PathVariable Long id,
+            @RequestBody StatusDTO statusDTO
+            ) {
+        log.info("订单审核: {}", id);
+
+        orderService.auditOrder(id, statusDTO.getStatus(), statusDTO.getRejectReason()  );
+
+        return Result.success("审核成功");
     }
 }
