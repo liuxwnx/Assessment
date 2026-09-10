@@ -4,7 +4,9 @@ import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.result.PageResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface OrderService {
@@ -44,4 +46,19 @@ public interface OrderService {
      * @return
      */
     void updateOrder(Long id, AddOrderDTO addOrderDTO);
+
+    /**
+     * 导出订单
+     * @param response
+     * @param orderSearchDTO
+     * @return
+     */
+    void exportOrder(HttpServletResponse response, OrderSearchDTO orderSearchDTO) throws IOException;
+
+    /**
+     * 导入订单
+     * @param file
+     * @return
+     */
+    void importOrder(MultipartFile file);
 }

@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OrderSearchDTO {
 
+
     private int pageNum; // 当前页码
 
     private int pageSize; // 每页大小
 
     private Long orderId;
-    private Long userId;
+    private Long userId; // 当前用户id
     private String status;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -1,9 +1,11 @@
 package com.example.assessment.demos.web.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.example.assessment.demos.web.context.BaseContext;
 import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.entity.Customer;
+import com.example.assessment.demos.web.entity.OrderExportExcelData;
 import com.example.assessment.demos.web.entity.Product;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.mapper.OrderMapper;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -189,6 +192,46 @@ public class OrderServiceImpl implements OrderService {
 
         // 执行更新订单
         orderMapper.updateOrder(id, sysOrder);
+    }
+
+    /**
+     * 导出订单
+     * @param response
+     * @param orderSearchDTO
+     * @return
+     */
+    @Override
+    public void exportOrder(HttpServletResponse response, OrderSearchDTO orderSearchDTO) throws IOException {
+
+        Long userId = BaseContext.getCurrentId();
+        orderSearchDTO.setUserId(userId);
+        // 根据条件查询订单列表
+        List<OrderExportExcelData> excelDataList;
+
+        if (userId == 1) {
+            excelDataList = orderMapper.exportOrderAll(orderSearchDTO);
+        } else {
+            excelDataList = orderMapper.exportOrder(orderSearchDTO);
+        }
+
+
+        if (excelDataList == null || excelDataList.size() == 0){
+            throw new RuntimeException("没有数据");
+        }
+
+        // 利用EasyExcel把查询出来的数据写入Excel文件
+        EasyExcel.write(response.getOutputStream(), OrderExportExcelData.class).sheet("订单列表").doWrite(excelDataList);
+
+    }
+
+    /**
+     * 导入订单
+     * @param file
+     * @return
+     */
+    @Override
+    public void importOrder(MultipartFile file) {
+
     }
 
 }

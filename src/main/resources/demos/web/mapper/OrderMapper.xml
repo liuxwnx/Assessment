@@ -84,4 +84,60 @@
         </where>
         order by o.create_time desc
     </select>
+
+
+    <select id="exportOrder" resultType="com.example.assessment.demos.web.entity.OrderExportExcelData">
+        SELECT o.order_number AS orderNumber,
+        c.customer_name AS customerName,
+        p.product_name AS productName,
+        o.quantity,
+        p.unit_price AS unitPrice,
+        o.amount,
+        o.status,
+        o.file,
+        o.create_time AS createTime
+        FROM sys_order o
+        JOIN customer c ON o.customer_id = c.id
+        JOIN product p ON o.product_id = p.id
+        <where>
+            c.salesman_id = #{userId}
+            <if test="status != null">
+                and o.status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and o.create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and o.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by o.create_time desc
+    </select>
+
+    <select id="exportOrderAll" resultType="com.example.assessment.demos.web.entity.OrderExportExcelData">
+        SELECT o.order_number AS orderNumber,
+        c.customer_name AS customerName,
+        p.product_name AS productName,
+        o.quantity,
+        p.unit_price AS unitPrice,
+        o.amount,
+        o.status,
+        o.file,
+        o.create_time AS createTime
+        FROM sys_order o
+        JOIN customer c ON o.customer_id = c.id
+        JOIN product p ON o.product_id = p.id
+        <where>
+            <if test="status != null">
+                and o.status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and o.create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and o.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by o.create_time desc
+    </select>
 </mapper>

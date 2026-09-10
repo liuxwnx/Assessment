@@ -3,6 +3,7 @@ package com.example.assessment.demos.web.mapper;
 import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.entity.Customer;
+import com.example.assessment.demos.web.entity.OrderExportExcelData;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
@@ -59,4 +60,18 @@ public interface OrderMapper {
      * @return
      */
     void updateOrder(@Param("id") Long id, @Param("sysOrder") SysOrder sysOrder);
+
+    /**
+     * 导出订单
+     * @param orderSearchDTO
+     * @return
+     */
+    List<OrderExportExcelData> exportOrder(OrderSearchDTO orderSearchDTO);
+
+    /**
+     * 导出全部订单
+     * @param orderSearchDTO
+     * @return
+     */
+    List<OrderExportExcelData> exportOrderAll(OrderSearchDTO orderSearchDTO);
 }
