@@ -1,6 +1,7 @@
 package com.example.assessment.demos.web.controller;
 
 
+import com.example.assessment.demos.web.dto.LogoutDTO;
 import com.example.assessment.demos.web.entity.SysUser;
 import com.example.assessment.demos.web.result.Result;
 import com.example.assessment.demos.web.service.LoginService;
@@ -32,6 +33,18 @@ public class LoginController {
         }
 
         return Result.error("用户名或密码错误");
+    }
+
+    /**
+     * 退出登录
+     * @param logoutDTO
+     * @return
+     */
+    @PostMapping("/logout")
+    public Result logout(@RequestBody LogoutDTO logoutDTO){
+        log.info("退出登录: {}", logoutDTO.getToken());
+        loginService.logout(logoutDTO.getToken());
+        return Result.success("退出登录");
     }
 
 }

@@ -40,4 +40,16 @@ public class JwtUtils {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    /**
+     * 获取JWT令牌的剩余有效时间（秒）
+     * @param token JWT令牌字符串
+     * @return 剩余有效时间（秒），如果已过期则返回0
+     */
+    public static long getRemainingExpirationSeconds(String token) {
+        Claims claims = parseToken(token);
+        Date expiration = claims.getExpiration();
+        long remainingMillis = expiration.getTime() - System.currentTimeMillis();
+        return Math.max(remainingMillis / 1000, 0);
+    }
 }

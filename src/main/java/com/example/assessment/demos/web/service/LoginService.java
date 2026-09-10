@@ -12,4 +12,10 @@ public interface LoginService {
      * @return
      */
     LoginInfoVO login(@Param("sysUser") SysUser sysUser);
+
+    /**
+     * 退出登录
+     * @param token
+     */
+    void logout(String token);
 }

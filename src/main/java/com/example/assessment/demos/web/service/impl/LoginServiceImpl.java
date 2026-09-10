@@ -8,10 +8,12 @@ import com.example.assessment.demos.web.vo.LoginInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -19,6 +21,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private LoginMapper loginMapper;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     /**
      * 登录
@@ -58,5 +63,21 @@ public class LoginServiceImpl implements LoginService {
         }
 
         return null;
+    }
+
+    /**
+     * 退出登录
+     * @param token
+     */
+    @Override
+    public void logout(String token) {
+        // 使用jwt工具获取这个令牌的剩余时间
+        long remainingTime = JwtUtils.getRemainingExpirationSeconds(token);
+        log.info("令牌 {} 剩余有效期: {} 秒", token, remainingTime);
+        if (remainingTime > 0){
+            String key = "token:" + token;
+            redisTemplate.opsForValue().set(key, "1", remainingTime, TimeUnit.SECONDS);
+        }
+
     }
 }

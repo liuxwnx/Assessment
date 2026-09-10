@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
-    private JwtTokenInterceptor jwtTokenUserInterceptor;
+    private JwtTokenInterceptor jwtTokenInterceptor;
 
     /**
      * 注册自定义拦截器
@@ -25,9 +25,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("开始注册自定义拦截器...");
 
-        registry.addInterceptor(jwtTokenUserInterceptor)
+        registry.addInterceptor(jwtTokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login");
+                .excludePathPatterns("/login", "/logout");
     }
 
 }

@@ -4,6 +4,8 @@ import com.example.assessment.demos.web.utils.JwtUtils;
 import com.example.assessment.demos.web.context.BaseContext;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 public class JwtTokenInterceptor implements HandlerInterceptor {
 
 
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 校验jwt
@@ -45,6 +50,16 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         //2、校验令牌
         try {
             log.info("jwt校验:{}", token);
+
+            // 检查令牌是否在黑名单中
+            String logoutKey = "token:" + token;
+            if (redisTemplate.hasKey(logoutKey)) {
+                log.info("令牌已在黑名单中，拒绝访问");
+                response.setStatus(401);
+                return false;
+            }
+
+
             Claims claims = JwtUtils.parseToken(token);
             Long userId = Long.valueOf(claims.get("userId").toString());
             BaseContext.setCurrentId(userId);
