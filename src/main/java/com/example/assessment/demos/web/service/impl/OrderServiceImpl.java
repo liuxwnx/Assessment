@@ -4,10 +4,8 @@ import com.alibaba.excel.EasyExcel;
 import com.example.assessment.demos.web.context.BaseContext;
 import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
-import com.example.assessment.demos.web.entity.Customer;
-import com.example.assessment.demos.web.entity.OrderExportExcelData;
-import com.example.assessment.demos.web.entity.Product;
-import com.example.assessment.demos.web.entity.SysOrder;
+import com.example.assessment.demos.web.entity.*;
+import com.example.assessment.demos.web.mapper.CustomerMapper;
 import com.example.assessment.demos.web.mapper.OrderMapper;
 import com.example.assessment.demos.web.mapper.ProductMapper;
 import com.example.assessment.demos.web.properties.AliOssProperties;
@@ -43,9 +41,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductMapper productMapper;
 
+    @Autowired
+    private CustomerMapper customerMapper;
 
     /**
      * 订单查询
+     *
      * @param orderSearchDTO
      * @return
      */
@@ -63,9 +64,9 @@ public class OrderServiceImpl implements OrderService {
 
         Page<SysOrder> orderPage = null;
 
-        if (userId == 1){
+        if (userId == 1) {
             orderPage = orderMapper.orderQueryAll(orderSearchDTO);
-        }else {
+        } else {
             // 执行查询
             orderPage = orderMapper.orderQuery(orderSearchDTO);
         }
@@ -76,6 +77,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单详情
+     *
      * @param id
      * @return
      */
@@ -90,12 +92,13 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 添加订单
+     *
      * @param addOrderDTO
      * @return
      */
     @Override
     public void addOrder(AddOrderDTO addOrderDTO) throws IOException {
-        if (addOrderDTO == null){
+        if (addOrderDTO == null) {
             throw new RuntimeException("参数为空");
         }
 
@@ -129,6 +132,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单审核
+     *
      * @param id
      * @param status
      * @return
@@ -137,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void auditOrder(Long id, String status, String rejectReason) {
         // 参数校验
-        if (id == null || status == null || "".equals(status)){
+        if (id == null || status == null || "".equals(status)) {
             throw new RuntimeException("参数为空");
         }
 
@@ -148,7 +152,7 @@ public class OrderServiceImpl implements OrderService {
         // 根据商品id查询商品库存
         Integer stock = productMapper.getProductById(productId);
 
-        if (stock == null || stock <= 0 || stock < sysOrder.getQuantity()){
+        if (stock == null || stock <= 0 || stock < sysOrder.getQuantity()) {
             throw new RuntimeException("商品库存不足");
         }
 
@@ -167,13 +171,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 重新提交订单
+     *
      * @param id
      * @param addOrderDTO
      * @return
      */
     @Override
     public void updateOrder(Long id, AddOrderDTO addOrderDTO) {
-        if (id == null || addOrderDTO == null){
+        if (id == null || addOrderDTO == null) {
             throw new RuntimeException("参数为空");
         }
         // 获取当前时间
@@ -186,7 +191,7 @@ public class OrderServiceImpl implements OrderService {
         sysOrder.setUpdateTime(updateTime);
         // 设置顶端状态
         sysOrder.setStatus("待审批");
-        if (sysOrder == null){
+        if (sysOrder == null) {
             throw new RuntimeException("订单不存在");
         }
 
@@ -196,6 +201,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 导出订单
+     *
      * @param response
      * @param orderSearchDTO
      * @return
@@ -215,7 +221,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
 
-        if (excelDataList == null || excelDataList.size() == 0){
+        if (excelDataList == null || excelDataList.size() == 0) {
             throw new RuntimeException("没有数据");
         }
 
@@ -226,12 +232,83 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 导入订单
+     *
      * @param file
      * @return
      */
     @Override
-    public void importOrder(MultipartFile file) {
+    @Transactional
+    public void importOrder(MultipartFile file) throws IOException {
+        List<OrderImportExcelData> excelDataList = EasyExcel.read(file.getInputStream())
+                .head(OrderImportExcelData.class)
+                .sheet()
+                .doReadSync();
+
+        if (excelDataList == null || excelDataList.isEmpty()) {
+            throw new RuntimeException("导入数据为空");
+        }
+
+        Long currentUserId = BaseContext.getCurrentId();
+
+        for (int i = 0; i < excelDataList.size(); i++) {
+            OrderImportExcelData data = excelDataList.get(i);
+            int rowNum = i + 2;
+
+            if (data.getCustomerName() == null || data.getCustomerName().trim().isEmpty()) {
+                throw new RuntimeException("第" + rowNum + "行：客户名称不能为空");
+            }
+            if (data.getProductName() == null || data.getProductName().trim().isEmpty()) {
+                throw new RuntimeException("第" + rowNum + "行：商品名称不能为空");
+            }
+            if (data.getQuantity() == null || data.getQuantity() <= 0) {
+                throw new RuntimeException("第" + rowNum + "行：数量必须大于0");
+            }
+
+            // 1. 通过客户名称查找客户ID
+            Long customerId = customerMapper.getCustomerIdByName(data.getCustomerName().trim());
+            if (customerId == null) {
+                throw new RuntimeException("第" + rowNum + "行：未找到客户【" + data.getCustomerName() + "】");
+            }
+
+            // 2. 校验该客户是否属于当前销售员（管理员跳过校验）
+            if (currentUserId != 1) {
+                Long salesmanId = customerMapper.getSalesmanIdByCustomerId(customerId);
+                if (!currentUserId.equals(salesmanId)) {
+                    throw new RuntimeException("第" + rowNum + "行：客户【" + data.getCustomerName()
+                            + "】不属于您，无法导入");
+                }
+            }
+
+            // 3. 通过商品名称查找商品ID
+            Long productId = productMapper.getProductIdByName(data.getProductName().trim());
+            if (productId == null) {
+                throw new RuntimeException("第" + rowNum + "行：未找到商品【" + data.getProductName() + "】");
+            }
+
+            // 4. 从数据库获取真实单价，计算金额
+            BigDecimal unitPrice = productMapper.getProductPrice(productId);
+            BigDecimal amount = unitPrice.multiply(BigDecimal.valueOf(data.getQuantity()));
+
+            // 5. 生成订单编号
+            long timestamp = System.currentTimeMillis();
+            String uuid = java.util.UUID.randomUUID().toString();
+            String orderNumber = timestamp + "__" + uuid;
+
+            // 6. 构建DTO并插入
+            AddOrderDTO addOrderDTO = new AddOrderDTO();
+            addOrderDTO.setOrderNumber(orderNumber);
+            addOrderDTO.setCustomerId(customerId);
+            addOrderDTO.setProductId(productId);
+            addOrderDTO.setQuantity(data.getQuantity());
+            addOrderDTO.setPrice(unitPrice);
+            addOrderDTO.setAmount(amount);
+            addOrderDTO.setStatus(data.getStatus() != null ? data.getStatus() : "待审批");
+            addOrderDTO.setFile(data.getFile());
+            addOrderDTO.setCreateTime(LocalDateTime.now());
+            addOrderDTO.setUpdateTime(LocalDateTime.now());
+
+            orderMapper.addOrder(addOrderDTO);
+        }
 
     }
-
 }

@@ -131,7 +131,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/import")
-    public Result<String> importOrder(MultipartFile file) {
+    public Result<String> importOrder(MultipartFile file) throws IOException {
         log.info("导入订单");
         // 使用easyExcel导入订单
         orderService.importOrder(file);

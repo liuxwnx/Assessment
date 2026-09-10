@@ -41,4 +41,12 @@ public interface ProductMapper {
      * @param quantity
      */
     void reduceStock(@Param("productId") Long productId, @Param("quantity") Integer quantity, @Param("updateTime")LocalDateTime updateTime);
+
+    /**
+     * 根据商品名称获取商品ID
+     * @param productName
+     * @return
+     */
+    @Select("SELECT id FROM product WHERE product_name = #{productName}")
+    Long getProductIdByName(@Param("productName") String productName);
 }

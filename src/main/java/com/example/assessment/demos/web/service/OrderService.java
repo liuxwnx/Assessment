@@ -60,5 +60,5 @@ public interface OrderService {
      * @param file
      * @return
      */
-    void importOrder(MultipartFile file);
+    void importOrder(MultipartFile file) throws IOException;
 }
