@@ -6,10 +6,12 @@ import com.example.assessment.demos.web.dto.AddOrderDTO;
 import com.example.assessment.demos.web.dto.OrderSearchDTO;
 import com.example.assessment.demos.web.dto.StatusDTO;
 import com.example.assessment.demos.web.entity.OrderImportExcelData;
+import com.example.assessment.demos.web.entity.ProductImportExcelData;
 import com.example.assessment.demos.web.entity.SysOrder;
 import com.example.assessment.demos.web.result.PageResult;
 import com.example.assessment.demos.web.result.Result;
 import com.example.assessment.demos.web.service.OrderService;
+import com.example.assessment.demos.web.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,8 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private ProductService productService;
 
     /**
      * 订单查询
@@ -130,11 +134,25 @@ public class OrderController {
      * @param file
      * @return
      */
-    @PostMapping("/import")
+   /* @PostMapping("/import")
     public Result<String> importOrder(MultipartFile file) throws IOException {
         log.info("导入订单");
         // 使用easyExcel导入订单
         orderService.importOrder(file);
+
+        return Result.success("导入成功");
+    }*/
+
+    /**
+     * 导入商品
+     * @param file
+     * @return
+     */
+    @PostMapping("/import")
+    public Result<String> importOrder(MultipartFile file) throws IOException {
+        log.info("导入商品");
+        // 使用easyExcel导入商品
+        productService.importProduct(file);
 
         return Result.success("导入成功");
     }
@@ -158,8 +176,8 @@ public class OrderController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
         // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-        String fileName = URLEncoder.encode("测试", "UTF-8").replaceAll("\\+", "%20");
+        String fileName = URLEncoder.encode("商品导入模板", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), OrderImportExcelData.class).sheet("模板").doWrite(() -> null);
+        EasyExcel.write(response.getOutputStream(), ProductImportExcelData.class).sheet("模板").doWrite(() -> null);
     }
 }

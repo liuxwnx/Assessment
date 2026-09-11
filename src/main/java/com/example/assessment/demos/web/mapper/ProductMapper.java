@@ -49,4 +49,16 @@ public interface ProductMapper {
      */
     @Select("SELECT id FROM product WHERE product_name = #{productName}")
     Long getProductIdByName(@Param("productName") String productName);
+
+    /**
+     * 导入更新商品数据
+     * @param productId
+     * @param quantity
+     * @param unitPrice
+     * @param updateTime
+     */
+    void importUpdateProduct(@Param("productId") Long productId,
+                             @Param("quantity") Integer quantity,
+                             @Param("unitPrice") BigDecimal unitPrice,
+                             @Param("updateTime") LocalDateTime updateTime);
 }

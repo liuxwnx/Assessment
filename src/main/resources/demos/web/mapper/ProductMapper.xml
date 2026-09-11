@@ -6,6 +6,13 @@
     <update id="reduceStock">
         UPDATE product SET current_inventory = current_inventory - #{quantity}, update_time = #{updateTime} WHERE id = #{productId}
     </update>
+    <update id="importUpdateProduct">
+        UPDATE product
+        SET current_inventory = current_inventory + #{quantity},
+            unit_price = #{unitPrice},
+            update_time = #{updateTime}
+        WHERE id = #{productId}
+    </update>
 
     <select id="list" resultType="com.example.assessment.demos.web.entity.Product">
         SELECT * FROM product

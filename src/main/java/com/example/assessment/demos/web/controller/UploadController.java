@@ -25,7 +25,6 @@ public class UploadController {
     public String upload(MultipartFile file) throws IOException {
         log.info("file接收的文件名: {}", file.getOriginalFilename());
 
-        // TODO 文件上传
         AliOssUtil aliOssUtil = new AliOssUtil(properties.getEndpoint(), properties.getAccessKeyId(), properties.getAccessKeySecret(), properties.getBucketName());
         //把addOrderDTO.getFile()转成byte[]
         return aliOssUtil.upload(file.getBytes(), file.getOriginalFilename());
