@@ -73,10 +73,10 @@ public class LoginServiceImpl implements LoginService {
     public void logout(String token) {
         // 使用jwt工具获取这个令牌的剩余时间
         long remainingTime = JwtUtils.getRemainingExpirationSeconds(token);
-        log.info("令牌 {} 剩余有效期: {} 秒", token, remainingTime);
         if (remainingTime > 0){
             String key = "token:" + token;
             redisTemplate.opsForValue().set(key, "1", remainingTime, TimeUnit.SECONDS);
+            log.info("令牌 {} 已缓存到 Redis，有效期: {} 秒", token, remainingTime);
         }
 
     }
