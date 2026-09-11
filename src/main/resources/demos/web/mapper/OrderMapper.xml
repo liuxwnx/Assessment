@@ -70,19 +70,19 @@
     </select>
 
     <select id="orderQueryAll" resultType="com.example.assessment.demos.web.entity.SysOrder">
-        SELECT o.* FROM sys_order o join customer c on o.customer_id = c.id
+        SELECT * FROM sys_order
         <where>
             <if test="status != null">
-                and o.status = #{status}
+                and status = #{status}
             </if>
             <if test="beginTime != null">
-                and o.create_time &gt;= #{beginTime}
+                and create_time &gt;= #{beginTime}
             </if>
             <if test="endTime != null">
-                and o.create_time &lt;= #{endTime}
+                and create_time &lt;= #{endTime}
             </if>
         </where>
-        order by o.create_time desc
+        order by create_time desc
     </select>
 
 
