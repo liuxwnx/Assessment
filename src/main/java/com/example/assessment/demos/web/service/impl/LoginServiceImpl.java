@@ -54,6 +54,10 @@ public class LoginServiceImpl implements LoginService {
             // 生成令牌
             String token = JwtUtils.generateToken(claims);
 
+            // 将令牌存入Redis
+            redisTemplate.opsForValue().set("token:" + token, "1", JwtUtils.getRemainingExpirationSeconds(token), TimeUnit.SECONDS);
+            log.info("令牌 {} 已缓存到 Redis，有效期: {} 秒", token, JwtUtils.getRemainingExpirationSeconds(token));
+
             return LoginInfoVO.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
@@ -72,12 +76,17 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public void logout(String token) {
         // 使用jwt工具获取这个令牌的剩余时间
-        long remainingTime = JwtUtils.getRemainingExpirationSeconds(token);
-        if (remainingTime > 0){
+        //long remainingTime = JwtUtils.getRemainingExpirationSeconds(token);
+
+        // 如果令牌还有剩余时间，则将其缓存到Redis 黑名单
+       /* if (remainingTime > 0){
             String key = "token:" + token;
             redisTemplate.opsForValue().set(key, "1", remainingTime, TimeUnit.SECONDS);
             log.info("令牌 {} 已缓存到 Redis，有效期: {} 秒", token, remainingTime);
-        }
+        }*/
 
+        // 删除Redis中的令牌
+        redisTemplate.delete("token:" + token);
+        log.info("令牌 {} 已从 Redis 删除", token);
     }
 }

@@ -53,8 +53,14 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 
             // 检查令牌是否在黑名单中
             String logoutKey = "token:" + token;
-            if (redisTemplate.hasKey(logoutKey)) {
+            /*if (redisTemplate.hasKey(logoutKey)) {
                 log.info("令牌已在黑名单中，拒绝访问");
+                response.setStatus(401);
+                return false;
+            }*/
+
+            if (!redisTemplate.hasKey(logoutKey)) {
+                log.info("令牌已失效，拒绝访问");
                 response.setStatus(401);
                 return false;
             }
